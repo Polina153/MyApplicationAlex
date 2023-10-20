@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="question_to_user">Do you want to save?</string>
+    <string name="positive_button">Yes</string>
+    <string name="negative_button">No</string>
+    <string name="negative_answer">No!</string>
+    <string name="note">write your note here</string>
+    <string name="title">Title</string>
+    <string name="date">11.22.3333</string>
+    <string name="is_important_checkbox_title">Important</string>
+    <string name="text_view">TextView</string>
+    <string name="my_fragment_subtitle">Main screen</string>
+    <string name="second_fragment_subtitle">Note</string>
+    <string name="add_button">Add</string>
+    <string name="mistake">Ошибка трансформации</string>
+    <string name="default_text">text</string>
+    <string name="default_title">Title</string>
+    <string name="delete">delete</string>
+</resources>
