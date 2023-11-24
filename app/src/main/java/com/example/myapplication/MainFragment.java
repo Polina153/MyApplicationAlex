@@ -1,5 +1,7 @@
 package com.example.myapplication;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
@@ -16,10 +18,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 
 public class MainFragment extends Fragment {
+    public static final String REQUEST_KEY = "requestKey";
     private Navigator navigator;
     private ToolbarCreator toolbarCreator;
+    private NotesAdapter notesAdapter;
+    private ArrayList<Note> dataSet = new ArrayList<>();
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -50,18 +61,10 @@ public class MainFragment extends Fragment {
         DividerItemDecoration itemDecoration = new DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL);
         //itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator, null));
         recyclerView.addItemDecoration(itemDecoration);
-        /*if (notesAdapter == null) {
-            notesAdapter = new NotesAdapter(sharedPref.getNotes(),
-                    new NotesAdapter.OnMyItemClickListener() {
-                        @Override
-                        public void onListItemClick(Note note, int position) {
-                            positionOfClickedElement = position;
-                            //navigator.addFragment(DetailsFragment.newInstance(note));
-                            navigator.addFragment(DetailsFragment.newInstance(note));
-                        }
-                    }, sharedPref, this);
+        if (notesAdapter == null) {
+            notesAdapter = new NotesAdapter(dataSet ,this);
         }
-        recyclerView.setAdapter(notesAdapter);*/
+        recyclerView.setAdapter(notesAdapter);
     }
 
     public static Fragment newInstance() {
