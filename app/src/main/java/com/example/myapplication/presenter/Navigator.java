@@ -1,9 +1,12 @@
-package com.example.myapplication;
+package com.example.myapplication.presenter;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.example.myapplication.R;
+import com.example.myapplication.view.DetailsFragment;
 
 public class Navigator {
     private final FragmentManager fragmentManager;

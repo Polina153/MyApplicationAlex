@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.presenter;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
@@ -13,21 +13,47 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.R;
+import com.example.myapplication.model.ISharedPreferences;
+import com.example.myapplication.model.Note;
+
 import java.util.ArrayList;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {
     private ArrayList<Note> dataSet;
+    private final OnMyItemClickListener clickListener;
+    private final ISharedPreferences sharedPref;
     private final Fragment fragment;
     private int position = 0;
+
     public ArrayList<Note> getDataSet() {
         return dataSet;
     }
+
     public NotesAdapter(@Nullable ArrayList<Note> dataSet,
+                        OnMyItemClickListener clickListener,
+                        @NonNull ISharedPreferences sharedPref,
                         Fragment fragment) {
         this.dataSet = dataSet;
+        this.clickListener = clickListener;
+        this.sharedPref = sharedPref;
         this.fragment = fragment;
     }
 
+    @Override
+    @NonNull
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        View view = LayoutInflater.from(viewGroup.getContext())
+                .inflate(R.layout.list_item_view, viewGroup, false);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder viewHolder, final int position) {
+        viewHolder.bind(dataSet.get(position));
+    }
+
+    @Override
     public int getItemCount() {
         return dataSet.size();
     }
@@ -56,18 +82,6 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         return getDataSet();
     }
 
-    @Override
-    @NonNull
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.list_item_view, viewGroup, false);
-        return new ViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        viewHolder.bind(dataSet.get(position));
-    }
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView noteTextView;
@@ -96,7 +110,37 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             body.setText(note.getBody());
             date.setText(note.getDate());
             isImportant.setChecked(note.isImportant());
+            isImportant.setOnClickListener(view -> {
+                Note changedNote = new Note(note.getTitle(),
+                        note.getBody(),
+                        note.getDate(),
+                        isImportant.isChecked());
+                dataSet.set(getAdapterPosition(), changedNote);
+                sharedPref.saveNote(changedNote, getAdapterPosition()/*this.getLayoutPosition()*/);
+            });
+            itemView.setOnClickListener(view -> {
+                Note newNote = new Note(note.getTitle(),
+                        note.getBody(),
+                        note.getDate(),
+                        isImportant.isChecked());
+                //TODO Save isImportant
+                sharedPref.saveNote(newNote, getAdapterPosition());
+                clickListener.onListItemClick(
+                        newNote,
+                        getAdapterPosition());
+            });
+            itemView.setOnLongClickListener(view -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    itemView.showContextMenu(10, 10);
+                    position = getAdapterPosition();
+                }
+                //longClickListener.onListItemLongClick(position);
+                return true;
+            });
         }
     }
 
+    public interface OnMyItemClickListener {
+        void onListItemClick(Note note, int position);
+    }
 }
