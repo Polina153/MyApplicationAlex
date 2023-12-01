@@ -1,5 +1,7 @@
 package com.example.myapplication.view;
 
+import static com.example.myapplication.view.MainFragment.REQUEST_KEY;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -47,6 +49,7 @@ public class DetailsFragment extends Fragment {
             @Override
             public void handleOnBackPressed() {
                 isKeyboardActive = false;
+                showDialogFragment();
             }
         };
         requireActivity().getOnBackPressedDispatcher().addCallback(
@@ -91,12 +94,55 @@ public class DetailsFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             setKeyboardStatus();
+            showDialogFragment();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-
+    private void showDialogFragment() {
+        SaveNoteDialogFragment dialogFragment = new SaveNoteDialogFragment();
+        setKeyboardStatus();
+        dialogFragment.setButtonClickListener(new SaveNoteDialogFragment.OnDialogFragmentClickListener() {
+            @SuppressLint("ShowToast")
+            @Override
+            public void onButtonClick(SaveNoteDialogFragment.ButtonName name) {
+                switch (name) {
+                    case YES_BUTTON:
+                        Bundle result = new Bundle();
+                        Note note = new Note(titleEditText.getText().toString(),
+                                textOfTheNoteEditText.getText().toString(),
+                                dateTextView.getText().toString(),
+                                isImportantCheckBox.isChecked());
+                        result.putParcelable(NOTE_KEY, note);
+                        getParentFragmentManager().setFragmentResult(REQUEST_KEY, result);
+                        if (isKeyboardActive) {
+                            hideKeyBoard();
+                        }
+                        if (navigator == null) {
+                            navigator = ((MainActivity) getActivity()).getNavigator();
+                        }
+                        navigator.popBackStack();
+                        break;
+                    case NO_BUTTON:
+                        //FIXME case No called two times in a row
+                        Toast.makeText(DetailsFragment.this.requireActivity().getBaseContext(),
+                                DetailsFragment.this.getString(R.string.negative_answer),
+                                Toast.LENGTH_SHORT).show();
+                        /*Toast.makeText(requireContext(),
+                                getString(R.string.negative_answer),
+                                Toast.LENGTH_SHORT);*/
+                        Context context = getActivity();
+                        if (navigator == null && !(context == null)) {
+                            navigator = ((MainActivity) context).getNavigator();
+                        }
+                        navigator.popBackStack();
+                        break;
+                }
+            }
+        });
+        dialogFragment.show(getChildFragmentManager(), SaveNoteDialogFragment.TAG);
+    }
 
     private void hideKeyBoard() {
         AppCompatActivity activity = (AppCompatActivity) requireActivity();

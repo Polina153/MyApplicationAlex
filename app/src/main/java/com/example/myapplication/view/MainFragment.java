@@ -1,6 +1,7 @@
 package com.example.myapplication.view;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.widget.Toast.LENGTH_SHORT;
 
 import static com.example.myapplication.view.DetailsFragment.NOTE_KEY;
 
@@ -16,9 +17,14 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.model.ISharedPreferences;
@@ -29,7 +35,10 @@ import com.example.myapplication.presenter.NotesAdapter;
 import com.example.myapplication.R;
 import com.example.myapplication.presenter.ToolbarCreator;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 
 public class MainFragment extends Fragment {
@@ -86,12 +95,46 @@ public class MainFragment extends Fragment {
                         @Override
                         public void onListItemClick(Note note, int position) {
                             positionOfClickedElement = position;
-                            //navigator.addFragment(DetailsFragment.newInstance(note));
                             navigator.addFragment(DetailsFragment.newInstance(note));
                         }
                     }, sharedPref, this);
         }
         recyclerView.setAdapter(notesAdapter);
+    }
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.cards_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = requireActivity().getMenuInflater();
+        inflater.inflate(R.menu.context_menu, menu);
+    }
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_delete) {
+            //notesAdapter.deleteElement(getPositionOfClickedElement());
+            notesAdapter.deleteElement(notesAdapter.getPosition());
+            sharedPref.deleteNote(notesAdapter.getPosition());
+            Toast.makeText(getActivity(), "Item deleted", LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onContextItemSelected(item);
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_add) {
+            Note newNote = new Note(getString(R.string.title),
+                    getString(R.string.note),
+                    getDateOfCreation(),
+                    false);
+            sharedPref.saveNewNote(newNote);
+            notesAdapter.addNewElement(newNote, 0);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
     public void onPause() {
         ArrayList<Note> list = notesAdapter.getList();
@@ -99,6 +142,12 @@ public class MainFragment extends Fragment {
         sharedPref.saveNotes(list);
         super.onPause();
     }
+
+    @NonNull
+    private String getDateOfCreation() {
+        return new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(new Date());
+    }
+
 
     @Override
     public void onResume() {
@@ -110,3 +159,4 @@ public class MainFragment extends Fragment {
         return new MainFragment();
     }
 }
+
