@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
@@ -39,6 +41,8 @@ public class DetailsFragment extends Fragment {
     private CheckBox isImportantCheckBox;
     private Navigator navigator;
     private boolean isKeyboardActive = false;
+    public static final String BUNDLE_KEY = "bundleKey";
+    private DatePicker datePickerScroller;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -76,8 +80,26 @@ public class DetailsFragment extends Fragment {
         textOfTheNoteEditText = view.findViewById(R.id.body_of_note_edit_text);
         dateTextView = view.findViewById(R.id.date_of_the_note);
         titleEditText = view.findViewById(R.id.title);
-        //TextView dateTextView = view.findViewById(R.id.date_of_the_note);
         isImportantCheckBox = view.findViewById(R.id.importance_second_fragment);
+        datePickerScroller = view.findViewById(R.id.date_picker_scroller);
+        datePickerScroller.setVisibility(View.INVISIBLE);
+        dateTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                datePickerScroller.setVisibility(View.VISIBLE);
+                dateTextView.setText(datePickerScroller.getDayOfMonth() + "." + (datePickerScroller.getMonth() + 1) + "." + datePickerScroller.getYear());
+                datePickerScroller.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String date = String.valueOf(datePickerScroller.getDayOfMonth());
+                        String month = String.valueOf(datePickerScroller.getMonth() + 1);
+                        String year = String.valueOf(datePickerScroller.getYear());
+                        dateTextView.setText(date + "." + month + "." + year);
+                        datePickerScroller.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
+        });
 
         Bundle args = getArguments();
         if (args != null) {
@@ -110,6 +132,7 @@ public class DetailsFragment extends Fragment {
                 switch (name) {
                     case YES_BUTTON:
                         Bundle result = new Bundle();
+                        dateTextView.setText(datePickerScroller.getDayOfMonth() + "." + (datePickerScroller.getMonth() + 1) + "." + datePickerScroller.getYear());
                         Note note = new Note(titleEditText.getText().toString(),
                                 textOfTheNoteEditText.getText().toString(),
                                 dateTextView.getText().toString(),
