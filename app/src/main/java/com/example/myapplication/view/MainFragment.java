@@ -118,7 +118,7 @@ public class MainFragment extends Fragment {
             //notesAdapter.deleteElement(getPositionOfClickedElement());
             notesAdapter.deleteElement(notesAdapter.getPosition());
             sharedPref.deleteNote(notesAdapter.getPosition());
-            Toast.makeText(getActivity(), "Item deleted", LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.item_deleted, LENGTH_SHORT).show();
             return true;
         }
         return super.onContextItemSelected(item);

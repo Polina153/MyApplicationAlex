@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Заметки</string>
+    <string name="question_to_user">Сохранить?</string>
+    <string name="positive_button">Да</string>
+    <string name="negative_button">Нет</string>
+    <string name="negative_answer">Не сохранено</string>
+    <string name="note">Текст заметки</string>
+    <string name="title">Заголовок</string>
+    <string name="is_important_checkbox_title">Важное</string>
+    <string name="my_fragment_subtitle">Основной экран</string>
+    <string name="default_text">Текс</string>
+    <string name="default_title">Заголовок</string>
+    <string name="delete">Удалить</string>
+    <string name="second_fragment_subtitle">Заметка</string>
+    <string name="item_deleted">Удалено</string>
+</resources>
